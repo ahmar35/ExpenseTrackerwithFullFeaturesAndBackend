@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+    </head>
+    <body>
+        <form onsubmit="addingExpense(event)">
+            EXPENDITURE:<input type="text" id="expenditure" required>
+            DESCRIPTION:<input type="text" id="description" >
+            CATEGORY:<select id="category" width="100px">
+                <option value="fuel">Fuel</option>
+                <option value="food">Food</option>
+                <option value="Entertainment">Entertainment</option>
+                <option value="study">Study</option>
+                <option value="other">Others</option>
+            </select>
+            <button class="block" type="Submit">ADD EXPENSES</button>
+        </form>
+        <ui id="list"></ui>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+
+        
+        <script>
+            function addingExpense(event){
+                const EXPENDITURE=document.getElementById('expenditure').value
+                const DESCRIPTION=document.getElementById('description').value
+                const CATEGORY=document.getElementById('category').value
+                
+                const id=localStorage.getItem('token')
+                event.preventDefault()
+
+                
+
+
+                expenseDetails={
+                    EXPENDITURE,
+                    DESCRIPTION,
+                    CATEGORY
+
+                }
+                const token=localStorage.getItem('token')
+
+
+                axios.post("http://localhost:3000/ExpenseForm",expenseDetails,{headers:{
+                        'Authorization':token}})
+                    .then((res)=>{
+
+                        
+
+                        alert('succesfully added')
+                        showProductOnScreen(res.data)
+
+
+                })
+            }
+            window.addEventListener("DOMContentLoaded", () => {
+               
+                const token=localStorage.getItem('token')
+
+                axios.get("http://localhost:3000/ExpenseDetails",{headers:{
+                        'Authorization':token}})
+                .then((res)=>{
+                    for(var i=0;i<res.data.length;i++){
+                        showProductOnScreen(res.data[i])
+
+                    }
+
+                })
+
+            })
+            function showProductOnScreen(expense){
+                const parentNode=document.getElementById('list')
+                const childHTML=`<li id=${expense.id}> ${expense.Expenditure}-${expense.Description}-${expense.Category}
+                    <button onclick="deleteInfo(${expense.id})">DELETE</button>
+                    </li>`
+                    parentNode.innerHTML+=childHTML
+                    
+            }
+            function deleteInfo(id){
+                const token=localStorage.getItem('token')
+
+
+                axios.delete('http://localhost:3000/DeleteInfo',{headers:{
+                        'Authorization':token}})
+            }
+
+
+        </script>
+    </body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+</head>
+
+<body>
+    <h1 id="header-title">Expense Tracker</h1>
+    <form onsubmit="SIGNUP(event)">
+        ENTER YOUR NAME:<input type="text" id="name" required/>
+        ENTER YOUR EMAIL:<input type="text" id="email" required />
+        PASSWORD:<input type="password" id="password" required />
+        <button class="block" ;type="Submit">SIGN UP</button>
+        <a href="D:\NodeJS\Login\login.html">ExistingUser-click here to login</a>
+
+    </form>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+
+    <script>
+        function SIGNUP(Details){
+            const NAME=document.getElementById('name').value
+            const EMAIL=document.getElementById('email').value
+            const PASSWORD=document.getElementById('password').value
+            event.preventDefault()
+            UserDetails={
+                NAME,
+                EMAIL,
+                PASSWORD
+            }
+            axios.post("http://localhost:3000/User/SignUp",UserDetails)
+                .then((res)=>{
+
+
+                    if(res.status===201){
+                        alert('succesfully registred')
+                        window.location.href='./Login/login.html'
+                    }
+                    
+
+                }).catch(err=>console.log(err)
+)
+
+        }
+ 
+        </script>
+</body>
+</html>
