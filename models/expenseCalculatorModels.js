@@ -18,8 +18,16 @@ const userInfo=seq.define('USER',{
     },
     Password:{
         type:Sequelize.STRING,
-    }
-}
+    },
+    TotalExpense:{
+        type:Sequelize.INTEGER,
+        defaultValue:0,
+        },
+    ispremiumuser:Sequelize.BOOLEAN,
+
+    },
+    
+
 
 
 )

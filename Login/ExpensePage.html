@@ -104,10 +104,11 @@
                 var leaderboardElem = document.getElementById('leaderboard')
                 leaderboardElem.innerHTML += '<h1> Leader Board</h1>'
                 UserLeaderBoardArray.data.forEach((user) => {
+                    
 
-                    leaderboardElem.innerHTML += `<li>Name-${user.name}, Total Expense-${user.totalAmount}`
+                    leaderboardElem.innerHTML += `<li>Name-${user.Name}, Total Expense-${user.TotalExpense}`
                 })
-
+                console.log(UserLeaderBoardArray)
             }
             document.getElementById('message').appendChild(inputElement)
         }
