@@ -9,6 +9,7 @@ const jwt=require('jsonwebtoken')
 const routes=require('./routes/user')
 const router=require('./routes/expense')
 const purchaseRoutes=require('./routes/purchase')
+const premiumRoutes=require('./routes/premiumFeartures')
 
 const User = require('./models/expenseCalculatorModels')
 const ExpenseDetails=require('./models/expenseModels')
@@ -21,6 +22,7 @@ app.use(bodyParser.json())
 app.use(routes)
 app.use(router)
 app.use(purchaseRoutes)
+app.use(premiumRoutes)
 
 
 
