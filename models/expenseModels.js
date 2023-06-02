@@ -18,6 +18,7 @@ const expenseModels=seq.define('ExpenseDetails',{
     Category:{
         type:Sequelize.STRING,
     }
+ 
 }
 
 

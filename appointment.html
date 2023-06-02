@@ -1,0 +1,137 @@
+<html>
+
+<head>
+    <style>
+        .block {
+            display: block;
+            width: 25%;
+            height: 30px;
+            background-color: tomato;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        body {
+            background-image: url(https://freepngimg.com/thumb/machine/40018-1-call-centre-images-free-download-png-hd.png);
+        }
+    </style>
+</head>
+
+<body>
+    <h1 style=center;color: tomato;">Book a call</h1>
+    <h3>Book a call slot and our representative will call you within 1 hour of selected time</h3>
+    <hr width="100%" size="4px">
+    <form onsubmit="registerUser(event)">
+        Name:
+        <input type="text" id="name" required>
+        <br>
+        <br>
+        Email:<input type="email" id="email" required>
+        <br>
+        <br>
+        PhoneNo:<input type="text" id="phonenumber" v>
+        <br>
+        <br>
+        Time for call:<input type="date" id="date"><input type="time" id="time">
+        <br>
+        <br>
+        <button class="block" ;type="submit">GET A CALL</button>
+    </form>
+    <ul id="listuser"></ul>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+
+    <script>
+        function registerUser(event) {
+            const name = document.getElementById("name").value;
+            const mail = document.getElementById('email').value;
+            const contact = document.getElementById("phonenumber").value;
+            const time = document.getElementById("time").value;
+            const date = document.getElementById("date").value;
+            obj = {
+                name,
+                mail,
+                contact,
+                time,
+                date
+            }
+
+/*             localStorage.setItem(obj.mail, JSON.stringify(obj))
+ */            axios.post("http://localhost:4000/user/adduser", obj)
+                .then((res) => {
+                    console.log(res.data.newUserDetail)
+
+                    shownewuseronscreen(res.data.newUserDetail)
+
+                    event.preventDefault()
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+        }
+        window.addEventListener("DOMContentLoaded", () => {
+            axios.get("http://localhost:4000/user/get-users")
+                .then((res) => {
+                    for (var i = 0; i < res.data.allUsers.length; i++) {
+                        shownewuseronscreen(res.data.allUsers[i])
+                    }
+                })
+                .catch((err) => {
+                    console.log("nahi horaha")
+                    shownewuseronscreen(err)
+                })
+        })
+
+        /*   const localStorageObj = localStorage;
+          const localstoragekeys  = Object.keys(localStorageObj)
+ 
+          for(var i =0; i< localstoragekeys.length; i++){
+              const key = localstoragekeys[i]
+              const userDetailsString = localStorageObj[key];
+              const userDetailsObj = JSON.parse(userDetailsString);
+              shownewuseronscreen(userDetailsObj)
+          }  */
+        function shownewuseronscreen(users) {
+            /*  if (localStorage.getItem(user.mail)!=null){
+                 removeUserFromScreen(user.mail)
+             } */
+            const parentNode = document.getElementById("listuser")
+            var childHTML = `<li id=${users.id}> ${users.Name} - ${users.Email}           
+                <button onclick =deleteuser("${users.id}")>deleteuser</button>
+                <button onclick=edituser("${users.Email}","${users.Name}","${users.id}")>edit</button>
+                </li>`
+            console.log(users.Name)
+            parentNode.innerHTML = parentNode.innerHTML + childHTML
+        }
+
+        //Edit User
+
+        function edituser(mail, name, userId) {
+            document.getElementById("mail").value = mail;
+            document.getElementById("name").value = name;
+            deleteuser(userId)
+        }
+        function deleteuser(userId) {
+            axios.delete(`http://localhost:4000/user/delete-user/${userId}`)
+                .then((response) => {
+                    removeUserFromScreen(userId)
+
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+            /*  localStorage.removeItem(mail)
+             console.log(mail)
+             removeUserFromScreen(mail) */
+        }
+        function removeUserFromScreen(userId) {
+            const parentNode = document.getElementById("listuser")
+            const childNodetobeDeleted = document.getElementById(userId)
+            if (childNodetobeDeleted) {
+                parentNode.removeChild(childNodetobeDeleted)
+            }
+        }
+    </script>
+</body>
+
+</html>

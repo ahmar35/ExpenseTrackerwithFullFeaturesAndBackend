@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+</head>
+
+<body>
+    <h1 id="header-title">Expense Tracker</h1>
+    <form onsubmit="savetolocalstorage(event)">
+        CHOOSE EXPENSE AMOUNT:<input type="text" id="amount" name="expenseAmount" />
+        <label>CHOOSE DESCRIPTION</label> :<input type="text" id="description" name="description" required />
+        <label>CHOOSE A CATEGORY</label>
+        <select id="category" name="category" style="width:100px">
+            <option value="fuel">Fuel</option>
+            <option value="food">Food</option>
+            <option value="movies">Movies</option>
+            <option value="Education">Education</option>
+        </select>
+        <button class="block" ;type="Submit">ADD EXPENSES</button>
+    </form>
+    <ul id="expenselist"></ul>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+
+    <script>
+        function savetolocalstorage(event) {
+            const expense = event.target.expenseAmount.value;
+            const description = event.target.description.value;
+            const category = event.target.category.value;
+            //localStorage.setItem("expense",expense)
+            //localStorage.setItem("description",description)
+            //localStorage.setItem("category",category)
+            const obj = {
+                expense,
+                description,
+                category
+            }
+            event.preventDefault()
+            try {
+                axios.post("http://localhost:3000/addUser", obj)
+                    .then((response) => {
+                        showExpenseDetails(response.data)
+                    })
+            } catch (error) {
+                console.log(error)
+                alert("error adding expense")
+            }
+        }
+        window.addEventListener("DOMContentLoaded", () => {
+            try {
+                axios.get("http://localhost:3000/getUser")
+                    .then((response) => {
+                        for (var i = 0; i < response.data.length; i++) {
+                            showExpenseDetails(response.data[i])
+                        }
+                    })
+            } catch (error) {
+                console.log(error)
+                alert("error fetching expense")
+            }
+        })
+        async function showExpenseDetails(expense) {
+            const parentNode = document.getElementById('expenselist')
+            const childHTML = `<li id='${expense.id}'> ${expense.Amount}-${expense.Description}
+                <button onclick="deleteuser('${expense.id}')" > Delete </button> 
+                <button onclick=edit('${expense.id}','${expense.Amount}','${expense.Category}','${expense.Description}') > Edit </button> 
+
+                    </li>`
+            parentNode.innerHTML = parentNode.innerHTML + childHTML;
+        }
+        function edit(id, amount, Category, Description) {
+
+            document.getElementById("amount").value = amount
+            document.getElementById("description").value = Description
+            document.getElementById("category").value = Category
+            const obj = {
+                Amount: amount,
+                Description: Description,
+                Category: Category
+            }
+            try {
+                axios.put(`http://localhost:3000/update/${id}`, obj)
+                deleteuser(id)
+            } catch (error) {
+                console.log(error)
+                alert('update err')
+            }
+        }
+        function deleteuser(id) {
+            try {
+                axios.delete(`http://localhost:3000/delete-user/${id}`)
+                removeUserFromScreen(id)
+            } catch (error) {
+                console.log(error)
+                alert("error deleting expense")
+            }
+        }
+        function removeUserFromScreen(id) {
+            const parentNode = document.getElementById('expenselist')
+            const childNodetobeDeleted = document.getElementById(id)
+            parentNode.removeChild(childNodetobeDeleted)
+        } 
+    </script>
+
+</body>
+
+</html>

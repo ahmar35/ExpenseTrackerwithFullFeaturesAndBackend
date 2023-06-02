@@ -20,8 +20,8 @@ exports.signupPost=async(req, res, next) => {
 
 
 }
-function generateAccessToken(id){
-    return jwt.sign({USERId:id},'secretkey')
+function generateAccessToken(id,ispremiumuser){
+    return jwt.sign({USERId:id,ispremiumuser},'secretkey')
 }
 exports.logInPost=async (req, res, next) => {
     try {
@@ -35,7 +35,7 @@ exports.logInPost=async (req, res, next) => {
                 if (err) {
                     res.status(500).json({ message: 'Something Went Wrong' })
                 } else if (result == true) {
-                    res.status(201).json({message:'logged in successfully',token:generateAccessToken(UserInfo[0].id)})
+                    res.status(201).json({message:'logged in successfully',token:generateAccessToken(UserInfo[0].id,UserInfo[0].ispremiumuser)})
                 } else {
                     return res.status(401).json({ message: 'Incorrect Password' })
                 }

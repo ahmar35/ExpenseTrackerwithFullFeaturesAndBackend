@@ -1,7 +1,14 @@
 const Razorpay=require('razorpay')
 const purchaseModels=require('../models/orders')
+const jwt=require('jsonwebtoken')
 const Order = require('../models/orders')
+const userControllers=require('../controllers/user')
 require('dotenv').config()
+
+function generateAccessToken(id,ispremiumuser){
+    return jwt.sign({USERId:id,ispremiumuser},'secretkey')
+}
+
 
 exports.purchasePremium=async(req,res,next)=>{
     console.log('first')
@@ -40,6 +47,7 @@ exports.purchasePremium=async(req,res,next)=>{
 
     try{
     const {payment_id, order_id} = req.body;
+    
 
     
     const order=await Order.findOne({where: {orderid: order_id}})
@@ -47,9 +55,8 @@ exports.purchasePremium=async(req,res,next)=>{
         const promise1=order.update({ paymentId: payment_id, status: 'SUCCESSFUL'})
     
         const promise2= req.user.update({ ispremiumuser: true })
-
         Promise.all([promise1,promise2]).then(()=>{
-            return res.status(202).json({sucess: true, message: "Transaction Successful"})
+            return res.status(202).json({sucess: true, message: "Transaction Successful",token:generateAccessToken(req.user.id,true)})
 
 
         }).catch(err=>{
@@ -62,5 +69,6 @@ exports.purchasePremium=async(req,res,next)=>{
     
  
 } 
+
     
 

@@ -7,9 +7,9 @@
 
 <body>
     <form onsubmit="addingExpense(event)">
-        EXPENDITURE:<input type="text" id="expenditure" required>
-        DESCRIPTION:<input type="text" id="description">
-        CATEGORY:<select id="category" width="100px">
+        EXPENDITURE:<input type="text" name="expenseamount" id="expenditure" required>
+        DESCRIPTION:<input type="text" name="description" id="description">
+        CATEGORY:<select  id="category" name="category" width="100px">
             <option value="fuel">Fuel</option>
             <option value="food">Food</option>
             <option value="Entertainment">Entertainment</option>
@@ -21,6 +21,7 @@
     </form>
     <div id="message"></div>
     <button id="rzp-button1">Buy Premium Membership</button>
+    <button onclick="download()" id="downloadexpense">Download File</button>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <ui id="list"></ui>
     <ui id="leaderboard"></ui>
@@ -28,16 +29,16 @@
 
     <script>
         function addingExpense(event) {
-            const EXPENDITURE = document.getElementById('expenditure').value
-            const DESCRIPTION = document.getElementById('description').value
-            const CATEGORY = document.getElementById('category').value
+           
             const id = localStorage.getItem('token')
             event.preventDefault()
-            expenseDetails = {
-                EXPENDITURE,
-                DESCRIPTION,
-                CATEGORY
-            }
+            const form = new FormData(event.target);
+            const expenseDetails = {
+            EXPENDITURE: form.get("expenseamount"),
+            DESCRIPTION: form.get("description"),
+            CATEGORY: form.get("category")
+        }
+           
             const token = localStorage.getItem('token')
             axios.post("http://localhost:3000/ExpenseForm", expenseDetails, {
                 headers: {
@@ -47,6 +48,7 @@
                 .then((res) => {
                     alert('succesfully added')
                     showProductOnScreen(res.data)
+                    console.log(res)
                 })
         }
         function showPremiumUserMessage() {
@@ -78,6 +80,7 @@
                 .then((res) => {
                     for (var i = 0; i < res.data.length; i++) {
                         showProductOnScreen(res.data[i])
+                        console.log(res)
                     }
                 })
         })
@@ -88,6 +91,24 @@
                     </li>`
             parentNode.innerHTML += childHTML
 
+        }
+
+        function download(){
+            const token = localStorage.getItem('token')
+
+            axios.get('http://localhost:3000/user/download', { headers: {"Authorization" : token} })
+            .then((response) => {
+                    
+                    var a = document.createElement("a");
+                    a.href = response.data.fileurl;
+                    a.download = 'expense.csv';
+                    a.click();
+                
+
+            })
+            .catch((err) => {
+                alert(err.response.data.message)
+            })
         }
         function showLeaderBoardOnScreen() {
             const inputElement = document.createElement('input')
@@ -113,8 +134,9 @@
             document.getElementById('message').appendChild(inputElement)
         }
         function deleteInfo(id) {
+            
             const token = localStorage.getItem('token')
-            axios.delete('http://localhost:3000/DeleteInfo', {
+            axios.delete(`http://localhost:3000/DeleteInfo/${id}`, {
                 headers: {
                     'Authorization': token
                 }
